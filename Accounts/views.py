@@ -1,11 +1,12 @@
 from django.contrib.auth.models import Permission
 from django.db.models.query import QuerySet
+from django.http import response
 from django.http.response import HttpResponse
 from rest_framework import serializers
 import rest_framework
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView,UpdateAPIView
-from .serializers import UsersSerializer
+from .serializers import UsersSerializer,AccountSerializer
 from .models import Users,Account
 # Create your views here.
 
@@ -19,3 +20,7 @@ class RegisterationView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response('success')
+
+class RoleRegistrationView(CreateAPIView):
+
+    serializer_class = AccountSerializer
