@@ -68,3 +68,14 @@ class UsersSerializer(ModelSerializer):
                 password = validated_data['password']
             )
             return user
+
+class LoginSerializer(ModelSerializer):
+
+    class Meta:
+
+        model = Users
+        fields = ['email','password','token']
+
+        read_only_fields = ['token']
+    
+
