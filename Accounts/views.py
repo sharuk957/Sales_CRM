@@ -22,7 +22,7 @@ class RegisterationView(CreateAPIView):
         else:
             if Users.objects.filter(email=request.data['email']):
                 return Response({'message':'Email already Exist'},status=status.HTTP_208_ALREADY_REPORTED)
-            if Users.objects.filter(email=request.data['mobile_number']):
+            if Users.objects.filter(mobile_number=request.data['mobile_number']):
                 return Response({'message':'Mobile number already Exist'},status=status.HTTP_208_ALREADY_REPORTED)
             role = Account.objects.create(role="Super Admin",company_name=request.data['company_name'])
             update_request = request.data.copy()
