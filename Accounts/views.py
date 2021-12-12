@@ -55,8 +55,11 @@ class OtpLoginView(APIView):
         mobile_number = request.data['mobile_number']
         user = Users.objects.filter(mobile_number=mobile_number[3:]).first()
         if user:
-            send_sms(mobile_number)
-            return Response({"message":"success"},status=status.HTTP_200_OK)
+            try:
+                send_sms(mobile_number)
+                return Response({"message":"success"},status=status.HTTP_200_OK)
+            except:
+                return Response({"message":"connection problem pls try again later"},status=status.HTTP_408_REQUEST_TIMEOUT)
             
         
         return Response({'user is not found'},status=status.HTTP_404_NOT_FOUND)
