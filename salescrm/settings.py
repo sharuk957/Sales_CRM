@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import django_heroku
 from pathlib import Path
+import environ
+
+
+env = environ.Env()
+environ.Env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -150,3 +156,8 @@ django_heroku.settings(locals())
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+
+TWILIO_TOKEN = env('TWILIO_AUTH_TOKEN')
+TWILIO_SID = env('TWILIO_SID')
+TWILIO_SERVICES = env('TWILIO_SERVICES')

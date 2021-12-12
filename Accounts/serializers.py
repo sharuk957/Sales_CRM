@@ -13,6 +13,7 @@ class AccountSerializer(ModelSerializer):
         model = Account
         fields = '__all__'
 
+
 class UsersSerializer(ModelSerializer):
     email = serializers.EmailField(
             required=True,
@@ -40,7 +41,6 @@ class UsersSerializer(ModelSerializer):
                 email = validated_data['email'],
                 name = validated_data['name'],
                 mobile_number = validated_data['mobile_number'],
-                company_name = validated_data['company_name'],
                 role = validated_data['role'],
                 password = validated_data['password']
             )
@@ -50,7 +50,6 @@ class UsersSerializer(ModelSerializer):
                 email = validated_data['email'],
                 name = validated_data['name'],
                 mobile_number = validated_data['mobile_number'],
-                company_name = validated_data['company_name'],
                 role = validated_data['role'],
                 password = validated_data['password']
             )
@@ -74,8 +73,8 @@ class LoginSerializer(ModelSerializer):
     class Meta:
 
         model = Users
-        fields = ['email','password','token']
+        fields = ['token']
 
         read_only_fields = ['token']
-    
+
 

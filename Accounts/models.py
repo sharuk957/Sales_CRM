@@ -7,31 +7,27 @@ import jwt,datetime
 
 class MyAccountManager(BaseUserManager):
 
-    def create_user(self, name,email,mobile_number,company_name,role,password=None):
+    def create_user(self, name,email,mobile_number,role,password=None):
         if not email:
             raise ValueError("users must have an email address. ")
         if not mobile_number:
             raise ValueError("users must have a mobile number. ")
-        if not company_name:
-            raise ValueError("users must have a company name. ")
         
         user = self.model(
             email = self.normalize_email(email),
             name = name,
             mobile_number = mobile_number,
-            company_name = company_name,
             role = role,
         )
         user.set_password(password)
         user.save(using = self.db)
         return user
 
-    def create_superuser(self, name, email, mobile_number, company_name, role, password=None):
+    def create_superuser(self, name, email, mobile_number, role, password=None):
         user = self.model(
             email = self.normalize_email(email),
             name = name,
             mobile_number = mobile_number,
-            company_name = company_name,
             role = role
         )
         user.set_password(password)
@@ -42,20 +38,24 @@ class MyAccountManager(BaseUserManager):
         return user
 
 
+
+
 class Account(models.Model):
 
     role                = models.CharField(max_length=50)
-    
+    company_name        = models.CharField(max_length=250,default="brototype")
 
     def __str__(self):
-        return self.role
+        return self.role + "/ " + self.company_name
+
+
+
 
 class Users(AbstractBaseUser):
 
     name                = models.CharField(max_length=250)
     email               = models.EmailField(unique=True)
     mobile_number       = models.BigIntegerField(unique=True)
-    company_name        = models.CharField(max_length=250)
     role                = models.ForeignKey(Account, on_delete=CASCADE)
     date_joined         = models.DateField(auto_now_add=True)
     last_login          = models.DateField(auto_now=True)
@@ -65,7 +65,7 @@ class Users(AbstractBaseUser):
     is_staff            = models.BooleanField(default=False)
 
     USERNAME_FIELD      = 'email'
-    REQUIRED_FIELDS      = ['mobile_number','company_name','name']
+    REQUIRED_FIELDS      = ['mobile_number','name']
 
     objects = MyAccountManager()
 
