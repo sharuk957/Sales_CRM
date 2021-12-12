@@ -43,7 +43,7 @@ class MyAccountManager(BaseUserManager):
 class Account(models.Model):
 
     role                = models.CharField(max_length=50)
-    company_name        = models.CharField(max_length=250,default="brototype")
+    company_name        = models.CharField(max_length=250)
 
     def __str__(self):
         return self.role + "/ " + self.company_name

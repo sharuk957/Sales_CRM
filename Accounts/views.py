@@ -20,6 +20,10 @@ class RegisterationView(CreateAPIView):
         if company_detail:
             return Response({'message':"company already Exited"},status=status.HTTP_208_ALREADY_REPORTED)
         else:
+            if Users.objects.filter(email=request.data['email']):
+                return Response({'message':'Email already Exist'},status=status.HTTP_208_ALREADY_REPORTED)
+            if Users.objects.filter(email=request.data['mobile_number']):
+                return Response({'message':'Mobile number already Exist'},status=status.HTTP_208_ALREADY_REPORTED)
             role = Account.objects.create(role="Super Admin",company_name=request.data['company_name'])
             update_request = request.data.copy()
             update_request.update({'role':role.pk})
@@ -37,11 +41,13 @@ class LoginView(GenericAPIView):
 
         email = request.data.get('email')
         password = request.data.get('password')
+        if Users.objects.filter(email=email).first():
+            user = authenticate(email=email,password=password)
 
-        user = authenticate(email=email,password=password)
-
-        if user is None:
-            return Response({'message':'invalid Credential'},status=status.HTTP_401_UNAUTHORIZED)
+            if user is None:
+                return Response({'message':'invalid Credential'},status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response({'message':'Invalid email'},status=status.HTTP_401_UNAUTHORIZED)
         
         serializer = self.serializer_class(user)
         return Response(serializer.data)

@@ -15,14 +15,6 @@ class AccountSerializer(ModelSerializer):
 
 
 class UsersSerializer(ModelSerializer):
-    email = serializers.EmailField(
-            required=True,
-            validators=[UniqueValidator(queryset=Users.objects.all())]
-            )
-    mobile_number = serializers.IntegerField(
-            required=True,
-            validators=[UniqueValidator(queryset=Users.objects.all())]
-            )
     date_joined = serializers.DateField(read_only=True)
     last_login = serializers.DateField(read_only=True)
     is_active = serializers.BooleanField(read_only=True)
