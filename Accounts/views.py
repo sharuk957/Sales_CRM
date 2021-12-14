@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.db.models.query import QuerySet
 from django.http import request
 from rest_framework.response import Response
 from rest_framework import status
@@ -149,6 +148,13 @@ class TeamSignUpView(APIView):
         else:
             user_instance.is_staff = True
         user_instance.save()
+        subject = 'Registration is successful'
+        text_content= "Congrats"
+        html_content = render_to_string('confirmationemail.html')
+        to_email = email
+        send_email = EmailMultiAlternatives(subject,text_content,settings.EMAIL_HOST_USER,[to_email])
+        send_email.attach_alternative(html_content,"text/html")
+        send_email.send()
 
         return Response({'messge':"registration completed"},status=status.HTTP_201_CREATED)
 

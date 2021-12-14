@@ -173,6 +173,6 @@ TWILIO_SERVICES = env('TWILIO_SERVICES')
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'jescoecom@gmail.com'
-EMAIL_HOST_PASSWORD = 'jesco123@1'
+EMAIL_HOST_USER = 'salescrm39@gmail.com'
+EMAIL_HOST_PASSWORD = 'hhchrqtjztmgsvaz'
 EMAIL_USE_TLS = True

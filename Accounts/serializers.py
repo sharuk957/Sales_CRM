@@ -16,6 +16,7 @@ class AccountSerializer(ModelSerializer):
 
 
 class UsersSerializer(ModelSerializer):
+    
     date_joined = serializers.DateField(read_only=True)
     last_login = serializers.DateField(read_only=True)
     is_active = serializers.BooleanField(read_only=True)
@@ -29,37 +30,15 @@ class UsersSerializer(ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        if validated_data['role'].role == 'Super Admin':
-            user = Users.objects.create_superuser(
-                email = validated_data['email'],
-                name = validated_data['name'],
-                mobile_number = validated_data['mobile_number'],
-                role = validated_data['role'],
-                password = validated_data['password']
-            )
-            return user
-        elif validated_data['role'].role == 'Admin':
-            user = Users.objects.create(
-                email = validated_data['email'],
-                name = validated_data['name'],
-                mobile_number = validated_data['mobile_number'],
-                role = validated_data['role'],
-                password = validated_data['password']
-            )
-            user.is_admin = True
-            user.is_staff = True
-            user.save()
-            return user
-        else:
-            user = Users.objects.create(
-                email = validated_data['email'],
-                name = validated_data['name'],
-                mobile_number = validated_data['mobile_number'],
-                company_name = validated_data['company_name'],
-                role = validated_data['role'],
-                password = validated_data['password']
-            )
-            return user
+        user = Users.objects.create_superuser(
+            email = validated_data['email'],
+            name = validated_data['name'],
+            mobile_number = validated_data['mobile_number'],
+            role = validated_data['role'],
+            password = validated_data['password']
+        )
+        return user
+       
 
 class LoginSerializer(ModelSerializer):
 
