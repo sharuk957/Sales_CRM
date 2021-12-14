@@ -55,7 +55,7 @@ class Users(AbstractBaseUser):
 
     name                = models.CharField(max_length=250)
     email               = models.EmailField(unique=True)
-    mobile_number       = models.BigIntegerField(unique=True)
+    mobile_number       = models.CharField(max_length=250,unique=True)
     role                = models.ForeignKey(Account, on_delete=CASCADE)
     date_joined         = models.DateField(auto_now_add=True)
     last_login          = models.DateField(auto_now=True)
@@ -86,3 +86,12 @@ class Users(AbstractBaseUser):
         }
         token = jwt.encode(payload, 'secret',algorithm='HS256')
         return token
+
+class Invite(models.Model):
+
+    email               = models.EmailField(unique=True)
+    role                = models.ForeignKey(Account, on_delete=CASCADE)
+
+
+    def __str__(self):
+        return self.email

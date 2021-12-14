@@ -1,12 +1,15 @@
+from django.conf import settings
+from django.http import request
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import CreateAPIView,GenericAPIView
+from rest_framework.generics import CreateAPIView,GenericAPIView,ListAPIView
 from rest_framework.views import APIView
 from .serializers import UsersSerializer,LoginSerializer
-from .models import Users,Account
+from .models import Users,Account,Invite
 from django.contrib.auth import authenticate,login
 from .twilio import send_sms,checking
-
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 # Create your views here.
 
 class RegisterationView(CreateAPIView):
@@ -91,3 +94,63 @@ class OtpCheckView(GenericAPIView):
                 return Response({"message":"otp expires or already used "},status=status.HTTP_401_UNAUTHORIZED)
                 
         return Response({"message":"invalid mobile number"},status=status.HTTP_401_UNAUTHORIZED)
+
+
+
+class InvitationView(APIView):
+
+    def post(self,request):
+        mail = request.data['email']
+        role_instance = Account.objects.filter(role=request.data['role'],company_name = "brototype").first()
+        if role_instance:
+            role = role_instance
+        else:
+            role = Account.objects.create(role=request.data['role'],company_name = "brototype")
+
+        
+        already_existed_mails =""
+        email = mail.split(',')
+        for i in email:
+            if Invite.objects.filter(email=i).first() or Users.objects.filter(email = i).first():
+                already_existed_mails = already_existed_mails +(i + ",")
+            else:
+                Invite.objects.create(email=i,role=role)
+                subject = 'WELCOME TO CRM'
+                text_content= (f"hi welcome {i}")
+                html_content = render_to_string('invite.html',{"team" : "Brototype"})
+                to_email = i
+                send_email = EmailMultiAlternatives(subject,text_content,settings.EMAIL_HOST_USER,[to_email])
+                send_email.attach_alternative(html_content,"text/html")
+                send_email.send()
+        if already_existed_mails:
+            return Response({'message':"invitation is already send to these emails",'emails':already_existed_mails},status=status.HTTP_208_ALREADY_REPORTED)
+        return Response('success')
+
+
+class TeamSignUpView(APIView):
+    
+
+    def post(self,request):
+        email = request.data['email']
+        invited_member = Invite.objects.filter(email=email).first()
+
+        if invited_member:
+            role = invited_member.role
+            invited_member.delete()
+        else:
+            return Response({'message': "invalid email id, check your email id , enter provided email id or alredy registered "},status=status.HTTP_404_NOT_FOUND)
+        name = request.data['name']
+        mobile_number = request.data['mobile_number']
+        user_instance = Users.objects.create(email=email,mobile_number=mobile_number,name=name,role=role)
+        if role.role == 'Admin':
+            user_instance.is_admin = True
+            user_instance.is_staff = True
+        else:
+            user_instance.is_staff = True
+        user_instance.save()
+
+        return Response({'messge':"registration completed"},status=status.HTTP_201_CREATED)
+
+
+class RegisteredUserView(ListAPIView):
+    Serializer_class = UsersSerializer

@@ -75,7 +75,7 @@ ROOT_URLCONF = 'salescrm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR,'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -169,3 +169,10 @@ CORS_ALLOW_CREDENTIALS = True
 TWILIO_TOKEN = env('TWILIO_AUTH_TOKEN')
 TWILIO_SID = env('TWILIO_SID')
 TWILIO_SERVICES = env('TWILIO_SERVICES')
+
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'jescoecom@gmail.com'
+EMAIL_HOST_PASSWORD = 'jesco123@1'
+EMAIL_USE_TLS = True
