@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import fields
 from rest_framework.validators import UniqueValidator
 from .models import Account,Users
 from rest_framework.serializers import ModelSerializer

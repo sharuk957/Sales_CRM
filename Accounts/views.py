@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.db.models.query import QuerySet
 from django.http import request
 from rest_framework.response import Response
 from rest_framework import status
@@ -153,4 +154,5 @@ class TeamSignUpView(APIView):
 
 
 class RegisteredUserView(ListAPIView):
-    Serializer_class = UsersSerializer
+    queryset = Users.objects.all()
+    serializer_class = UsersSerializer
