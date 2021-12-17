@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db.models.deletion import CASCADE
-import jwt,datetime
+
+
+
 
 
 
@@ -77,15 +79,6 @@ class Users(AbstractBaseUser):
 
     def has_module_perms(self, add_label):
         return True
-    @property
-    def token(self):
-        payload = {
-            'id' : self.id,
-            'exp' : datetime.datetime.utcnow() + datetime.timedelta(hours=12),
-            'iat' : datetime.datetime.utcnow()
-        }
-        token = jwt.encode(payload, 'secret',algorithm='HS256')
-        return token
 
 class Invite(models.Model):
 

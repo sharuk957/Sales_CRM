@@ -1,19 +1,23 @@
 from django.conf import settings
-from django.http import request
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.generics import CreateAPIView,GenericAPIView,ListAPIView
+from rest_framework import status,permissions
+from rest_framework.generics import CreateAPIView,ListAPIView
 from rest_framework.views import APIView
-from .serializers import UsersSerializer,LoginSerializer
+from .serializers import UsersSerializer
 from .models import Users,Account,Invite
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate
 from .twilio import send_sms,checking
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
 # Create your views here.
+
+
 
 class RegisterationView(CreateAPIView):
 
+    
     serializer_class = UsersSerializer
 
     def post(self, request, *args, **kwargs):
@@ -36,12 +40,11 @@ class RegisterationView(CreateAPIView):
             return Response('success')
 
 
-class LoginView(GenericAPIView):
 
-    serializer_class = LoginSerializer
+class LoginView(APIView):
+
 
     def post(self,request):
-
         email = request.data.get('email')
         password = request.data.get('password')
         if Users.objects.filter(email=email).first():
@@ -51,13 +54,16 @@ class LoginView(GenericAPIView):
                 return Response({'message':'invalid Credential'},status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response({'message':'Invalid email'},status=status.HTTP_401_UNAUTHORIZED)
-        
-        serializer = self.serializer_class(user)
-        return Response(serializer.data)
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "refresh": str(refresh),
+        'access': str(refresh.access_token)
+        })
+
+
 
 
 class OtpLoginView(APIView):
-
 
     def post(self,request):
 
@@ -73,9 +79,9 @@ class OtpLoginView(APIView):
         
         return Response({'user is not found'},status=status.HTTP_404_NOT_FOUND)
 
-class OtpCheckView(GenericAPIView):
 
-    serializer_class = LoginSerializer
+class OtpCheckView(APIView):
+    
 
     def post(self,request):
 
@@ -85,9 +91,11 @@ class OtpCheckView(GenericAPIView):
         if user:
             try:
                 if checking(mobile_number,otp) == 'approved':
-                    login(request,user)
-                    serializer = self.serializer_class(user)
-                    return Response(serializer.data)
+                    refresh = RefreshToken.for_user(user)
+                    return Response({
+                        "refresh": str(refresh),
+                    'access': str(refresh.access_token)
+                    })
 
                 return Response({"message":"invalid otp"},status=status.HTTP_401_UNAUTHORIZED)
             except:
@@ -98,6 +106,9 @@ class OtpCheckView(GenericAPIView):
 
 
 class InvitationView(APIView):
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self,request):
         mail = request.data['email']
@@ -129,7 +140,6 @@ class InvitationView(APIView):
 
 class TeamSignUpView(APIView):
     
-
     def post(self,request):
         email = request.data['email']
         invited_member = Invite.objects.filter(email=email).first()
@@ -157,6 +167,7 @@ class TeamSignUpView(APIView):
         send_email.send()
 
         return Response({'messge':"registration completed"},status=status.HTTP_201_CREATED)
+
 
 
 class RegisteredUserView(ListAPIView):
