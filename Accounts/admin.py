@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db.models.fields import Field
 from .models import Account,Users
 from django.contrib.auth.admin import UserAdmin
 

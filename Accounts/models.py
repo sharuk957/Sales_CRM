@@ -3,10 +3,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db.models.deletion import CASCADE
 
 
-
-
-
-
 class MyAccountManager(BaseUserManager):
 
     def create_user(self, name,email,mobile_number,role,password=None):
@@ -88,3 +84,6 @@ class Invite(models.Model):
 
     def __str__(self):
         return self.email
+
+
+

@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status,permissions
 from rest_framework.generics import CreateAPIView,ListAPIView
 from rest_framework.views import APIView
-from .serializers import UsersSerializer
-from .models import Users,Account,Invite
+from .serializers import  UsersSerializer
+from .models import  Users,Account,Invite
 from django.contrib.auth import authenticate
 from .twilio import send_sms,checking
 from django.core.mail import EmailMultiAlternatives
@@ -173,3 +173,4 @@ class TeamSignUpView(APIView):
 class RegisteredUserView(ListAPIView):
     queryset = Users.objects.all()
     serializer_class = UsersSerializer
+

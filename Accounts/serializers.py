@@ -1,4 +1,3 @@
-from rest_framework.validators import UniqueValidator
 from .models import Account,Users
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
